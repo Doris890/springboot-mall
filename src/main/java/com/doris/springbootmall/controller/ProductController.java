@@ -23,6 +23,7 @@ public class ProductController {
         //@PathVariable productId : 表示是從url路徑中傳遞進來
         //取得某一筆商品數據 => 使用get方法來請求   (前端請求數據)
         //獲得某id商品的數據資料 => 需要先注入service   (從資料庫撈出數據)
+        //回傳Product 類型json給前端
         Product product = productService.getProductById(productId);
 
         if (product != null) {
