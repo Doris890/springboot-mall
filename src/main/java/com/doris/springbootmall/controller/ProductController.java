@@ -88,4 +88,20 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(updateProduct);
 
     }
+
+
+    /**
+     * 刪除商品
+     * @return
+     */
+    @DeleteMapping("products/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId){
+
+
+        productService.deleteProductById(productId);
+
+        //NO_CONTENT : 表示數據已經被刪除了
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    }
 }
