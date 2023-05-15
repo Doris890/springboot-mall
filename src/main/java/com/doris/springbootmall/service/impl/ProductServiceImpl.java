@@ -16,6 +16,7 @@ public class ProductServiceImpl implements ProductService {
     /**
      * service層的實作比較簡單，就只要去call ProductDao
      * 的getProductById方法就可以了
+     *
      * @param productId
      * @return
      */
@@ -27,6 +28,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Integer createProduct(ProductRequest productRequest) {
         return productDao.createProduct(productRequest);
+    }
+
+    @Override
+    public void updateProduct(Integer productId, ProductRequest productRequest) {
+
+        productDao.updateProduct(productId, productRequest);
     }
 
 
