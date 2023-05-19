@@ -1,5 +1,6 @@
 package com.doris.springbootmall.controller;
 
+import com.doris.springbootmall.constant.ProductCategory;
 import com.doris.springbootmall.dto.ProductRequest;
 import com.doris.springbootmall.model.Product;
 import com.doris.springbootmall.service.ProductService;
@@ -18,22 +19,39 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-
     /**
-     * 查詢商品列表
+     * 查詢商品列表 - 依據商品分類
      *
      * @return
      */
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts() {
+    public ResponseEntity<List<Product>> getProducts(
+            @RequestParam(required = false) ProductCategory category,
+            @RequestParam (required = false) String search
+            ) {
 
-        List<Product> productList = productService.getProducts();
-
-
+        // RequestParam 從URL中取得請求參數
+        List<Product> productList = productService.getProducts(category,search);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
 
     }
+
+//    /**
+//     * 查詢商品列表
+//     *
+//     * @return
+//     */
+//    @GetMapping("/products")
+//    public ResponseEntity<List<Product>> getProducts() {
+//
+//        List<Product> productList = productService.getProducts();
+//
+//
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(productList);
+//
+//    }
 
     /**
      * 查詢單一商品
