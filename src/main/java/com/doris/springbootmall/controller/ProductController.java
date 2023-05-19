@@ -5,6 +5,7 @@ import com.doris.springbootmall.dto.ProductQueryParams;
 import com.doris.springbootmall.dto.ProductRequest;
 import com.doris.springbootmall.model.Product;
 import com.doris.springbootmall.service.ProductService;
+import com.doris.springbootmall.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,10 @@ public class ProductController {
     private ProductService productService;
 
     /**
-     * 查詢商品列表 - 依據商品分類
-     *
-     * @return
-     */
+          * 查詢商品列表 - 分頁 + 總筆數
+          */
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             // 查詢條件 Filtering
             @RequestParam(required = false) ProductCategory category,
             @RequestParam(required = false) String search,
@@ -53,14 +52,62 @@ public class ProductController {
         productQueryParams.setOffset(offset);
 
 
-        // RequestParam 從URL中取得請求參數
-//        List<Product> productList = productService.getProducts(category, search);
+
+        // 取得 product list
         List<Product> productList = productService.getProducts(productQueryParams);
 
+        // 計算 product 總數
+        Integer total = productService.countProduct(productQueryParams);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productList);
+        // 分頁返回給前端
+        Page<Product> page = new Page<>();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResult(productList);
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
 
     }
+
+//    /**
+//     * 查詢商品列表 - 依據商品分類
+//     *
+//     * @return
+//     */
+//    @GetMapping("/products")
+//    public ResponseEntity<List<Product>> getProducts(
+//            // 查詢條件 Filtering
+//            @RequestParam(required = false) ProductCategory category,
+//            @RequestParam(required = false) String search,
+//
+//            // 排序 Sorting
+//            @RequestParam(defaultValue = "created_date") String orderBy,
+//            @RequestParam(defaultValue = "desc") String sort,
+//
+//            // 分頁 Pagination
+//            @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,
+//            @RequestParam(defaultValue = "0") @Min(0) Integer offset
+//    ) {
+//
+//        ProductQueryParams productQueryParams = new ProductQueryParams();
+//        productQueryParams.setCategory(category);
+//        productQueryParams.setSearch(search);
+//        productQueryParams.setOrderBy(orderBy);
+//        productQueryParams.setSort(sort);
+//        productQueryParams.setLimit(limit);
+//        productQueryParams.setOffset(offset);
+//
+//
+//        // RequestParam 從URL中取得請求參數
+////        List<Product> productList = productService.getProducts(category, search);
+//        List<Product> productList = productService.getProducts(productQueryParams);
+//
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(productList);
+//
+//    }
 
 //    /**
 //     * 查詢商品列表

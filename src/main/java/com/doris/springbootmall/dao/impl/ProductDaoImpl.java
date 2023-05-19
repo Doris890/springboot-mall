@@ -27,6 +27,34 @@ public class ProductDaoImpl implements ProductDao {
 
 
     @Override
+    public Integer countProduct(ProductQueryParams productQueryParams) {
+        String sql = "SELECT count(*) FROM product WHERE 1=1";
+
+
+        Map<String, Object> map = new HashMap<>();
+
+
+        // 查詢條件
+        if (productQueryParams.getCategory() != null) {
+            sql = sql + " AND category = :category";
+            map.put("category", productQueryParams.getCategory().name());
+        }
+
+
+        if (productQueryParams.getSearch() != null) {
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+
+        // queryForObject 通常用在計算 sql count 的時候
+        // sql變數、map變數、要轉換的類型
+        // 將count值轉換成Integer類型的返回值
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+
+        return total;
+    }
+
+    @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
 
         String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, " +
@@ -57,8 +85,8 @@ public class ProductDaoImpl implements ProductDao {
 
         // 分頁
         sql = sql + " LIMIT :limit OFFSET :offset ";
-        map.put("limit",productQueryParams.getLimit());
-        map.put("offset",productQueryParams.getOffset());
+        map.put("limit", productQueryParams.getLimit());
+        map.put("offset", productQueryParams.getOffset());
 
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
