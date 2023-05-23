@@ -28,23 +28,27 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Integer countProduct(ProductQueryParams productQueryParams) {
+
         String sql = "SELECT count(*) FROM product WHERE 1=1";
 
 
         Map<String, Object> map = new HashMap<>();
 
 
+//        // 查詢條件
+//        if (productQueryParams.getCategory() != null) {
+//            sql = sql + " AND category = :category";
+//            map.put("category", productQueryParams.getCategory().name());
+//        }
+//
+//
+//        if (productQueryParams.getSearch() != null) {
+//            sql = sql + " AND product_name LIKE :search";
+//            map.put("search", "%" + productQueryParams.getSearch() + "%");
+//        }
+
         // 查詢條件
-        if (productQueryParams.getCategory() != null) {
-            sql = sql + " AND category = :category";
-            map.put("category", productQueryParams.getCategory().name());
-        }
-
-
-        if (productQueryParams.getSearch() != null) {
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+        sql = addFilteringSql(sql, map, productQueryParams);
 
         // queryForObject 通常用在計算 sql count 的時候
         // sql變數、map變數、要轉換的類型
@@ -65,19 +69,21 @@ public class ProductDaoImpl implements ProductDao {
 
 
         // 查詢條件
-        if (productQueryParams.getCategory() != null) {
-            sql = sql + " AND category = :category";
+        sql = addFilteringSql(sql, map, productQueryParams);
 
-            //因為category參數是Enum類型，在使用上需要用name方法，
-            //去轉換成字串，再把字串加入name中
-            map.put("category", productQueryParams.getCategory().name());
-        }
-
-
-        if (productQueryParams.getSearch() != null) {
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+//        if (productQueryParams.getCategory() != null) {
+//            sql = sql + " AND category = :category";
+//
+//            //因為category參數是Enum類型，在使用上需要用name方法，
+//            //去轉換成字串，再把字串加入name中
+//            map.put("category", productQueryParams.getCategory().name());
+//        }
+//
+//
+//        if (productQueryParams.getSearch() != null) {
+//            sql = sql + " AND product_name LIKE :search";
+//            map.put("search", "%" + productQueryParams.getSearch() + "%");
+//        }
 
         // 排序
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
@@ -209,4 +215,22 @@ public class ProductDaoImpl implements ProductDao {
     }
 
 
+    private String addFilteringSql(String sql, Map<String, Object> map, ProductQueryParams productQueryParams) {
+
+
+        // 查詢條件
+        if (productQueryParams.getCategory() != null) {
+            sql = sql + " AND category = :category";
+            map.put("category", productQueryParams.getCategory().name());
+        }
+
+
+        if (productQueryParams.getSearch() != null) {
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+
+        return sql;
+
+    }
 }
